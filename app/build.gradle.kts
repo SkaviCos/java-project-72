@@ -38,6 +38,13 @@ dependencies {
     implementation("org.jsoup:jsoup:1.18.1")
 }
 
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = true
+    }
+}
+
 tasks.test {
     useJUnitPlatform()
     testLogging {
