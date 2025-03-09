@@ -5,6 +5,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
+import hexlet.code.dto.BasePage;
+import hexlet.code.model.Url;
 import hexlet.code.repository.BaseRepository;
 import hexlet.code.repository.UrlRepository;
 import io.javalin.Javalin;
@@ -27,13 +29,13 @@ public class App {
         return Integer.valueOf(port);
     }
 
-    private static Javalin getApp() throws Exception {
+    public static Javalin getApp() throws Exception {
         var hikaryConfig = new HikariConfig();
         String jdbcUrl = System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
         hikaryConfig.setJdbcUrl(jdbcUrl);
         var dataSource = new HikariDataSource(hikaryConfig);
 
-        var schemaFileName = System.getenv().getOrDefault("SCHEMA_FILE_NAME", "schemaH2.sql");
+        var schemaFileName = System.getenv().getOrDefault("SCHEMA_FILE_NAME", "schema.sql");
         var url = App.class.getClassLoader().getResourceAsStream(schemaFileName);
         var sql = new BufferedReader(new InputStreamReader(url))
                 .lines().collect(Collectors.joining("\n"));

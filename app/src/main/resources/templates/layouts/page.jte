@@ -48,7 +48,7 @@
 <footer class="footer border-top py-3 mt-5 bg-light">
     <div class="container-xl">
         <div class="text-center">
-            created by Iliatar
+            from skavicos with love
         </div>
     </div>
 </footer>
