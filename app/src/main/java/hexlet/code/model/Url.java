@@ -1,23 +1,16 @@
 package hexlet.code.model;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
-public class Url {
+public final class Url {
     private long id;
     private String name;
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
     private int lastStatusCode;
-    private Timestamp lastCheckAt;
+    private LocalDateTime lastCheckAt;
 
     public Url(String name) {
-        createdAt = Timestamp.valueOf(LocalDateTime.now());
         this.name = name;
-    }
-
-    public Url(String name, Timestamp createdAt) {
-        this.name = name;
-        this.createdAt = createdAt;
     }
 
     public void setId(long id) {
@@ -32,8 +25,11 @@ public class Url {
         return name;
     }
 
-    public Timestamp getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public int getLastStatusCode() {
@@ -44,11 +40,11 @@ public class Url {
         this.lastStatusCode = lastStatusCode;
     }
 
-    public Timestamp getLastCheckAt() {
+    public LocalDateTime getLastCheckAt() {
         return lastCheckAt;
     }
 
-    public void setLastCheckAt(Timestamp lastCheckAt) {
+    public void setLastCheckAt(LocalDateTime lastCheckAt) {
         this.lastCheckAt = lastCheckAt;
     }
 }

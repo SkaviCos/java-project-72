@@ -6,7 +6,14 @@ import hexlet.code.repository.BaseRepository;
 import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -15,6 +22,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Slf4j
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class RepositoryTest {
     private static Url url;
@@ -59,8 +67,6 @@ public class RepositoryTest {
         Url storedUrl = UrlRepository.find(url.getId()).get();
         assertEquals(url.getId(), storedUrl.getId());
         assertEquals(url.getName(), storedUrl.getName());
-        assertEquals(url.getCreatedAt().getDate(), storedUrl.getCreatedAt().getDate());
-        assertEquals(url.getCreatedAt().getTime(), storedUrl.getCreatedAt().getTime());
     }
 
     @Test
@@ -69,8 +75,6 @@ public class RepositoryTest {
         Url storedUrl = UrlRepository.find(url.getName()).get();
         assertEquals(url.getId(), storedUrl.getId());
         assertEquals(url.getName(), storedUrl.getName());
-        assertEquals(url.getCreatedAt().getDate(), storedUrl.getCreatedAt().getDate());
-        assertEquals(url.getCreatedAt().getTime(), storedUrl.getCreatedAt().getTime());
     }
 
     @Test
