@@ -2,6 +2,7 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
+    id("java")
     application
     java
     checkstyle
@@ -38,13 +39,6 @@ dependencies {
     implementation("org.jsoup:jsoup:1.18.1")
 }
 
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-    reports {
-        xml.required = true
-    }
-}
-
 tasks.test {
     useJUnitPlatform()
     testLogging {
@@ -54,4 +48,9 @@ tasks.test {
     }
 }
 
-tasks.jacocoTestReport { reports { xml.required.set(true) } }
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required = true
+    }
+}
