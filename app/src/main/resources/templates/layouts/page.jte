@@ -48,7 +48,7 @@
 <footer class="footer border-top py-3 mt-5 bg-light">
     <div class="container-xl">
         <div class="text-center">
-            from skavicos with love
+            from scavicos with love
         </div>
     </div>
 </footer>

@@ -5,38 +5,40 @@ import com.zaxxer.hikari.HikariDataSource;
 import gg.jte.ContentType;
 import gg.jte.TemplateEngine;
 import gg.jte.resolve.ResourceCodeResolver;
-import hexlet.code.dto.BasePage;
-import hexlet.code.model.Url;
+import hexlet.code.controller.RootController;
+import hexlet.code.controller.UrlController;
 import hexlet.code.repository.BaseRepository;
-import hexlet.code.repository.UrlRepository;
+import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.rendering.template.JavalinJte;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URL;
-import java.util.Optional;
+import java.sql.SQLException;
 import java.util.stream.Collectors;
-
-import static io.javalin.rendering.template.TemplateUtil.model;
 
 @Slf4j
 public class App {
+    private static final String SCHEMA_FILE_NAME = "schema.sql";
     private static int getPort() {
         String port = System.getenv().getOrDefault("PORT", "7070");
         return Integer.valueOf(port);
     }
 
-    public static Javalin getApp() throws Exception {
-        var hikaryConfig = new HikariConfig();
-        String jdbcUrl = System.getenv().getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project;DB_CLOSE_DELAY=-1;");
-        hikaryConfig.setJdbcUrl(jdbcUrl);
-        var dataSource = new HikariDataSource(hikaryConfig);
+    public static Javalin getApp() throws SQLException {
+        log.info("Begin prepare database");
 
-        var schemaFileName = System.getenv().getOrDefault("SCHEMA_FILE_NAME", "schema.sql");
-        var url = App.class.getClassLoader().getResourceAsStream(schemaFileName);
+        String jdbcUrl = System.getenv()
+                .getOrDefault("JDBC_DATABASE_URL", "jdbc:h2:mem:project");
+        log.info("jdbcUrl = " + jdbcUrl);
+
+        var hikariConfig = new HikariConfig();
+
+        hikariConfig.setJdbcUrl(jdbcUrl);
+        var dataSource = new HikariDataSource(hikariConfig);
+
+        var url = App.class.getClassLoader().getResourceAsStream(SCHEMA_FILE_NAME);
         var sql = new BufferedReader(new InputStreamReader(url))
                 .lines().collect(Collectors.joining("\n"));
 
@@ -46,40 +48,18 @@ public class App {
         }
 
         BaseRepository.dataSource = dataSource;
+        log.info("Database prepared successfully");
 
         var app = Javalin.create(config -> {
             config.bundledPlugins.enableDevLogging();
             config.fileRenderer(new JavalinJte(createTemplateEngine()));
         });
 
-        app.get(NamedRoutes.rootPath(), ctx -> {
-            BasePage page = new BasePage();
-            page.setFlash(ctx.consumeSessionAttribute("flash"));
-            ctx.render("index.jte", model("page", page));
-        });
-
-        app.post(NamedRoutes.urlsPath(), ctx -> {
-            String rawUrl = ctx.formParam("url");
-            Url newUrl = null;
-            try {
-                URI uri = new URI(rawUrl);
-                URL parsedUrl = uri.toURL();
-                newUrl = new Url(parsedUrl.getProtocol() + "://" + parsedUrl.getHost() + ":" + parsedUrl.getPort());
-            } catch (RuntimeException e) {
-                ctx.sessionAttribute("flash", "Некорректный URL");
-                ctx.redirect(NamedRoutes.rootPath());
-                return;
-            }
-
-            Optional<Url> storedUrl = UrlRepository.find(newUrl.getName());
-            if (storedUrl.isPresent()) {
-                ctx.sessionAttribute("flash", "Страница уже существует");
-            } else {
-                UrlRepository.save(newUrl);
-                ctx.sessionAttribute("flash", "Страница успешно добавлена");
-            }
-            ctx.redirect(NamedRoutes.urlsPath());
-        });
+        app.get(NamedRoutes.rootPath(), RootController::index);
+        app.post(NamedRoutes.urlsPath(), UrlController::create);
+        app.get(NamedRoutes.urlsPath(), UrlController::index);
+        app.get(NamedRoutes.urlPath("{id}"), UrlController::show);
+        app.post(NamedRoutes.postCheckPath("{id}"), UrlController::checkUrl);
 
         return app;
     }

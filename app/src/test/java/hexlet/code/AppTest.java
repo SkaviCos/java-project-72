@@ -1,12 +1,10 @@
-package code;
+package hexlet.code;
 
-
-import hexlet.code.App;
 import hexlet.code.model.UrlCheck;
 import hexlet.code.repository.BaseRepository;
 import hexlet.code.repository.UrlCheckRepository;
 import hexlet.code.repository.UrlRepository;
-import hexlet.code.NamedRoutes;
+import hexlet.code.util.NamedRoutes;
 import io.javalin.Javalin;
 import io.javalin.testtools.JavalinTest;
 import okhttp3.mockwebserver.MockResponse;
@@ -67,7 +65,6 @@ public class AppTest {
     public final void testMainPage() {
         JavalinTest.test(app, (server, client) -> {
             var response = client.get("/");
-
             assertEquals(200, response.code());
             assertTrue(response.body().string().contains("Бесплатно проверяйте сайты на SEO пригодность"));
         });
@@ -81,7 +78,6 @@ public class AppTest {
 
             String requestBody = "url=" + mockUrl;
             var response = client.post(NamedRoutes.urlsPath(), requestBody);
-
             assertEquals(200, response.code());
             assertTrue(response.body().string().contains(mockUrl.substring(0, mockUrl.length() - 1)));
 
@@ -90,7 +86,6 @@ public class AppTest {
             Long id = UrlRepository.find(mockUrl.substring(0, mockUrl.length() - 1)).get().getId();
 
             response = client.get(NamedRoutes.urlPath(id.toString()));
-
             assertEquals(200, response.code());
             assertTrue(response.body().string().contains(mockUrl.substring(0, mockUrl.length() - 1)));
         });
@@ -112,7 +107,6 @@ public class AppTest {
             String requestBody = "url=" + mockUrl;
             var response = client.post(NamedRoutes.urlsPath(), requestBody);
             String responseBodyString = response.body().string();
-
             assertEquals(200, response.code());
             assertTrue(responseBodyString.contains(mockUrl.substring(0, mockUrl.length() - 1)));
 
@@ -120,14 +114,12 @@ public class AppTest {
 
             response = client.post(NamedRoutes.postCheckPath(id.toString()));
             responseBodyString = response.body().string();
-
             assertEquals(200, response.code());
             assertTrue(responseBodyString.contains(TEST_TITLE));
             assertTrue(responseBodyString.contains(TEST_DESC));
             assertTrue(responseBodyString.contains(TEST_H_1));
 
             UrlCheck urlCheck = UrlCheckRepository.getLastUrlCheck(id).get();
-
             assertEquals(id, urlCheck.getUrlId());
             assertEquals(TEST_TITLE, urlCheck.getTitle());
             assertEquals(TEST_DESC, urlCheck.getDescription());

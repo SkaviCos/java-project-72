@@ -10,7 +10,6 @@ public class UrlIndexPage extends BasePage {
     List<Url> urls;
 
     public UrlIndexPage(List<Url> urls) {
-        super();
         this.urls = urls;
     }
 }
