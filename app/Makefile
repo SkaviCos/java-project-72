@@ -1,32 +1,27 @@
-.DEFAULT_GOAL := build-run
+dev:
+	@./gradlew run
 
-clean:
-	./gradlew clean
+start: dev
 
-build:
-	./gradlew clean build
+setup:
+	@gradle wrapper --gradle-version 8.3
 
 install:
-	./gradlew clean install
+	@./gradlew installDist
 
-run-dist:
-	./build/install/java-package/bin/java-package
+clean:
+	@./gradlew clean
 
-run:
-	./gradlew run
+build:
+	@./gradlew clean build
 
 test:
-	./gradlew test
+	@./gradlew test
 
 report:
-	./gradlew jacocoTestReport
+	@./gradlew jacocoTestReport
 
 lint:
-	./gradlew checkstyleMain checkstyleTest
-
-update-deps:
-	./gradlew useLatestVersions
-
-build-run: build run
+	@./gradlew checkstyleMain
 
 .PHONY: build
