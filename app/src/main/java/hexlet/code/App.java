@@ -35,6 +35,9 @@ public class App {
     public static void main(String[] args) throws IOException, SQLException {
         var app = getApp();
         var port = getPort();
+
+        System.out.println("привет я твой порт на сегодня " + port);
+
         app.start(port);
     }
 
